@@ -1,0 +1,16 @@
+#Ignore Folders
+dist/
+node_modules/
+public/uploads/*
+cert/
+
+#Ignore Files
+**/.DS_Store
+npm-debug.log
+src/data.json
+
+#Ignored Files Needed For Server
+.env
+.sendgrid.env
+
+logs/

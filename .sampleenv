@@ -1,0 +1,13 @@
+NODE_ENV=development
+TOKEN_SECRET=abc123
+DEV_DB_HOST=localhost
+DEV_DB_NAME=collectmarketcap
+DEV_DB_USER=root
+DEV_DB_PASSWORD=root
+
+TEST_DB_HOST=localhost
+TEST_DB_NAME=collectmarketcap_test
+TEST_DB_USER=root
+TEST_DB_PASSWORD=root
+
+PORT=4000
