@@ -30,12 +30,6 @@ let watchingPairs = [];
 let symbols = [];
 
 
-firestore.collection('notification').add({
-	createdAt: moment.utc(moment()).format('YYYY-MM-DD HH:mm:ss'), 
-	message: `Arbit on TEST`, 
-	type: 'HIGH_ARBIT', 
-	timestamp: moment().unix()});
-
 function runSpider() {
 
 	// watchingPairs
@@ -188,7 +182,7 @@ function calcMatrix(){
 					}
 					
 
-					if (targetObj[ex1][ex2] > 0) {
+					if (targetObj[ex1][ex2] > 5) {
 						/***push notification ***/
 						firestore.collection('notification').add({
 							createdAt: moment().unix().format('YYYY-MM-DD HH:mm:ss'), 
