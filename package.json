@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc ",
+    "build": "tsc",
+    "debug": "tsc; node --inspect dist/index.js ",
+    "start": "tsc; node  dist/cron.js ",
+    "test-trader": "tsc; node --inspect  dist/test-trader.js",
+    "test-both": "tsc; node  dist/test-both.js ",
+    "test": "mocha --reporter spec --compilers ts:ts-node/register test/**/*.test.ts",
     "spy-debug": "tsc; node --inspect dist/spy.js ",
     "spy": "tsc; node  dist/spy.js "
   },
