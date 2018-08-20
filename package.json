@@ -10,7 +10,6 @@
     "test-trader": "tsc; node --inspect  dist/test-trader.js",
     "test-both": "tsc; node  dist/test-both.js ",
     "test": "mocha --reporter spec --compilers ts:ts-node/register test/**/*.test.ts",
-
     "spy": "tsc; node  dist/spy.js "
   },
   "keywords": [],
