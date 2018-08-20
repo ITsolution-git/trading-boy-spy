@@ -1,3 +1,6 @@
 module.exports = {
-	exchanges: ['gateio', 'hitbtc2', 'kucoin', 'cryptopia']
+	exchanges: ['gateio', 'hitbtc2', 'kucoin', 'cryptopia'],
+	firebase: {
+		
+	}
 }

@@ -5,12 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc ",
-    "debug": "tsc; node --inspect dist/index.js ",
-    "start": "tsc; node  dist/cron.js ",
-    "test-trader": "tsc; node --inspect  dist/test-trader.js",
-    "test-both": "tsc; node  dist/test-both.js ",
-    "test": "mocha --reporter spec --compilers ts:ts-node/register test/**/*.test.ts",
-
+    "spy-debug": "tsc; node --inspect dist/spy.js ",
     "spy": "tsc; node  dist/spy.js "
   },
   "keywords": [],
@@ -44,6 +39,7 @@
     "debug": "^2.2.0",
     "dotenv": "^2.0.0",
     "ethereumjs-util": "^5.1.5",
+    "firebase-admin": "^6.0.0",
     "jayson": "^2.0.5",
     "knex": "^0.12.6",
     "lodash": "^4.17.5",
