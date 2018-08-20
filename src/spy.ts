@@ -7,6 +7,19 @@ const moment = require('moment');
 var mongoose     = require('mongoose');
 var watchingPairsModel      = require('mongoose').model('watchingPairs');
 
+
+ 
+import * as admin from "firebase-admin";
+var serviceAccount = require("../trading-dashboard-bot-firebase-adminsdk-3ydu7-bd57693f2b.json");
+
+var app = admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://trading-dashboard-bot.firebaseio.com"
+});
+var firestore = admin.firestore(app);
+
+
+
 db.connect(() => {
 	runSpider();
 });
@@ -15,6 +28,13 @@ var exchanges = [];
 var runFetchTicker = ['yobit'];
 let watchingPairs = [];
 let symbols = [];
+
+
+firestore.collection('notification').add({
+	createdAt: moment.utc(moment()).format('YYYY-MM-DD HH:mm:ss'), 
+	message: `Arbit on TEST`, 
+	type: 'HIGH_ARBIT', 
+	timestamp: moment().unix()});
 
 function runSpider() {
 
@@ -44,6 +64,7 @@ function runSpider() {
 }
 
 function cleanDB() {
+	//Delete watching paris
 	watchingPairs.map(pair=>{
 
 	    var SymbolModel = (mongoose.models && mongoose.models[pair.symbol]
@@ -55,6 +76,17 @@ function cleanDB() {
 	    });
 
 	});
+
+	//Delete Ticker 
+	exchanges.map((exchange, index)=>{
+	  	var ExchangeModel = (mongoose.models && mongoose.models[exchange.id]
+		  ? mongoose.models[exchange.id]
+		  : mongoose.model(exchange.id, new mongoose.Schema({}, { strict: false })))
+
+	    ExchangeModel.remove({timestamp: {$lt: moment().subtract(2, 'weeks').unix() } }).exec().then(()=>{
+
+	    });
+	})
 }
 
 function getWatchingPairs() {
@@ -117,6 +149,16 @@ function calcMatrix(){
 		}
 	})).then(tickers => {
 
+		//Save Ticker 
+		exchanges.map((exchange, index)=>{
+		  	var ExchangeModel = (mongoose.models && mongoose.models[exchange.id]
+			  ? mongoose.models[exchange.id]
+			  : mongoose.model(exchange.id, new mongoose.Schema({}, { strict: false })))
+
+		    ExchangeModel.collection.insert(Object.keys(tickers[index]).map(k=>tickers[index][k]));
+		})
+			  
+		//Calulate Arbitrage
 		watchingPairs.map(pair=>{
 			let values = {};
 			pair.exchanges.map(e=>{
@@ -124,6 +166,7 @@ function calcMatrix(){
 				if (index != -1) {
 					values[spyConfig.exchanges[index]] = tickers[index][pair.symbol];
 				}
+
 			});
 
 			let curExs = Object.keys(values);
@@ -133,30 +176,37 @@ function calcMatrix(){
 				curExs.map(ex2=>{
 					
 					if (values[ex1] && values[ex2]) {
-						targetObj[ex1][ex2] = (values[ex2].bid - values[ex1].ask)/values[ex1].ask * 100;
+						targetObj[ex1][ex2] = {
+							arbit: (values[ex2].bid - values[ex1].ask)/values[ex1].ask * 100,
+							volume1: values[ex1].quoteVolume,
+							volume2: values[ex2].quoteVolume,
+						}
+						
 
 					} else {
 						targetObj[ex1][ex2] = 0;
 					}
 					
+
+					if (targetObj[ex1][ex2] > 0) {
+						/***push notification ***/
+						firestore.collection('notification').add({
+							createdAt: moment().unix().format('YYYY-MM-DD HH:mm:ss'), 
+							message: `Arbit on ${ex1} ${ex2} is ${targetObj[ex1][ex2]} at ${moment().unix().format('YYYY-MM-DD HH:mm:ss')}`, 
+							type: 'HIGH_ARBIT', 
+							timestamp: moment().unix()});
+						/***push notification ***/
+					}
 				})
 			});
-
 	    	var SymbolModel = (mongoose.models && mongoose.models[pair.symbol]
 						  ? mongoose.models[pair.symbol]
 						  : mongoose.model(pair.symbol, new mongoose.Schema({}, { strict: false })))
 		    new SymbolModel({symbol:pair.symbol, matrix: targetObj, timestamp:timestamp}).save();
 
-		})
+		});	
+
+		console.log(`Saved targetObj Pairs`);
 	});
 
-	// watchingPairs.map(symbol=>{
-
-	// })
-}
-
-function fetchTickers(exchange, ) {
-	if (exchange.has['fetchTickers']) {
-	    return exchange.fetchTickers ();
-	}
 }

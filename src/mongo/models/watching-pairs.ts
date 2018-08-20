@@ -9,7 +9,7 @@ var watchingPairsSchema = new mongoose.Schema({
     index: true
   },
   exchanges: [{
-      type: String
+      type: Object
   }],
 });
 
