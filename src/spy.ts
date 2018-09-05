@@ -128,7 +128,7 @@ function calcMatrix(){
 		let sys = Object.keys(exchange.markets).filter(m=>symbols.indexOf(m)!=-1);
 		if (exchange.has['fetchTickers'] ) {
 
-			if (exchange.id == 'yobit') {
+			if (['yobit', 'liqui'].indexOf(exchange.id) != -1) {
 				let promises = [];
 				for (let i = 0; i < sys.length; i += 100)
 					promises.push(exchange.fetchTickers(sys.splice(i, Math.min(100, sys.length - i * 100))));
